@@ -1,11 +1,13 @@
-const unirest = require('unirest');
-const cheerio = require('cheerio');
+import unirest from 'unirest';
+import cheerio from 'cheerio';
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
 
 //* универсальный парсер
-function parsePost(url, elems) {
-    unirest.get(url).end(function (response) {
+async function parsePost(url, elems) { // функция выполняется ассинхронно
+    await unirest.get(url).end(({ body }) => { // но ожидает выполнение этой команды //*вытаскиваем сразу свойство body из response 
 
-        const body = response.body; // сохраняем html-код страницы 
+        // const body = response.body; // сохраняем html-код страницы 
         const $ = cheerio.load(body); // парсим содержимое нашего сайта
 
         const domain = url.match(/\/\/(.*?)\//)[1]; // получаем домен сайта 
@@ -23,6 +25,8 @@ function parsePost(url, elems) {
         };
         console.log(post);
     });
+    await delay(3000);
+    console.log('kek');
 };
 
 module.exports = parsePost; // чтобы была возможность импортировать функйию в другие файлы
