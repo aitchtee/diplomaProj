@@ -27,9 +27,9 @@ code {
 }
 
 .post__info {
-  padding: 15px 30px;
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
+  padding: 15px 30px;
 }
 /*# sourceMappingURL=index.css.map */

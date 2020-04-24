@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 
 const Post = (props) => {
   return (
     <div className="post">
-      <div 
-        style={{ backgroundImage: `url(${props.image})` }} 
+      <div
+        style={{ backgroundImage: `url(${props.image})` }}
         className="post__image"
       />
       <div className="post__info">
@@ -13,6 +13,6 @@ const Post = (props) => {
       </div>
     </div>
   );
-}
+};
 
 export default Post;

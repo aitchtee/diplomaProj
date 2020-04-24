@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import Post from './Components/Post';
-import posts from './posts.json'
+import Post from './components/Post';
+import posts from './posts.json';
 
 class App extends Component {
   render() {
     return (
       <div>
-        {
-          posts.map((post, key) => {
-            return (
+        {posts.map((post, key) => (
               <Post
                 key={key}
                 title={post.title}
@@ -16,8 +14,7 @@ class App extends Component {
                 image={post.image}
               />
             )
-          })
-        }
+          )}
       </div>
     );
   }

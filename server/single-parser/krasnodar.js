@@ -1,11 +1,11 @@
-//* парсер для краснодарского новостного сайта потому что кодировка сайта win1251
-
-const iconv = require("iconv-lite");
-const https = require("https");
+const unirest = require('unirest');
 const cheerio = require('cheerio');
 
-https.get('https://93.ru/text/politics/69100654/?from=centercolsecond_old', (res) => {
-    res.pipe(iconv.decodeStream("win1251")).collect((err, body) => { // перекодировка из win1251 в utf8
+//* парсер сайта краснодар
+function krasnodar() {
+    unirest.get('https://93.ru/text/politics/69100654/?from=centercolsecond_old').end(function (response) {
+        //! НУЖНА ПЕРЕКОДИРОВКА В UTF8
+        const body = response.body; // сохраняем html-код страницы 
         const $ = cheerio.load(body); // парсим содержимое нашего сайта
 
         const title = $('.title2').text().trim(); // получаем заголовок новости
@@ -19,7 +19,8 @@ https.get('https://93.ru/text/politics/69100654/?from=centercolsecond_old', (res
             text: text,
             views: views,
         };
-        if (err) throw err;
         console.log(post);
-    })
-});
+    });
+};
+
+krasnodar();
