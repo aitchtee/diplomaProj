@@ -1,5 +1,25 @@
 ЗДЕСЬ БУДУТ ЗАПИСАНЫ ПОЛЕЗНЫЕ ШТУКИ
 
+/******************** ДИПЛОМ **************************/
+
+Web scraper, parser
+БЭМ методология
+JS, 
+Redux - https://rajdee.gitbooks.io/redux-in-russian/ (Создание хранилища на клиентской части, использую Redux. Что такое редюсеры? Что такое store? Что такое actions? Зачем вообще Redux?), 
+React - (other frameworks +-), 
+node js, 
+json или БД, 
+sass, 
+ECMAScript 6 - https://habrahabr.ru/post/252323/, 
+Async / Await - https://habr.com/ru/company/ruvds/blog/326074/, 
+Cheerio - https://github.com/cheeriojs/cheerio (пакет, чтобы парсить), 
+Unirest (пакет, с помощью которого будем выполнять запросы)
+axios - библиотека для раюоты с http запросами
+mockapi - MockAPI - сервис для создания тестового RESTful API(https://archakov.im/post/mockapi-servis-dlya-sozdaniya-testovogo-restfulapi.html)
+Vs code +-
+Copywrite/авторские права
+
+
 /******************************************************/
 
 добавить в package.josn для babel:
