@@ -5,19 +5,8 @@ import { Provider } from 'react-redux'
 
 import store from './store';
 
-import './index.css';
-
-console.log(store);
-store.subscribe(() => {
-  alert('store has changed');
-});
-
-// setTimeout(() => {
-//   store.dispatch({
-//     type: 'qwe',
-//   });
-//   console.log(store.getState());
-// }, 1000)
+import './styles/index.css';
+import './styles/semantic.min.css'
 
 render(
   <Provider store={store}>

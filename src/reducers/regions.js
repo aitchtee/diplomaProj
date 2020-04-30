@@ -1,5 +1,5 @@
 const initialState = {
-  region: 'KRD'
+  region: 'Krasnodar'
 };
 
 export default function (state = initialState, action) {

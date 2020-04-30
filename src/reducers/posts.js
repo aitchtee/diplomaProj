@@ -2,7 +2,7 @@
 
 // начальные значения
 const initialState = {
-  posts: [],
+  items: [],
 };
 
 export default function (state = initialState, action) {
@@ -11,7 +11,7 @@ export default function (state = initialState, action) {
     case 'SET_POSTS':
       return {
         ...state, //! (?) копируем из state в новый объект. тоже самое, что Object.assign({}, state, { posts: ['что-нибудь'] })
-        posts: action.payload, // вносим новое значение 
+        items: action.payload, // вносим новое значение 
       };
     case 'REMOVE_POSTS':
       return {
