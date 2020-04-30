@@ -3,10 +3,14 @@
 //* объект, в котором хранятся параметры для поиска 
 var elems = {
   krasnodar: {
-    title: '.title2',
-    image: '.news-article__image',
-    text: '.article-text',
-    views: '.block_views_news'
+    title: '.E1wd',
+    image: '.EHr3',
+    text: '.KFatj',
+    views: '.KJbx .KJep' // title: '.heading_news-detail',
+    // image: '.news-detail__photo img',
+    // text: '.KFatj',
+    // views: '.card-short-info.card-short-info__views',
+
   },
   sochi: {
     title: '.h4-gorod',
