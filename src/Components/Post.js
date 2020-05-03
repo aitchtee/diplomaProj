@@ -1,21 +1,28 @@
 import React from 'react';
-import { Item, Icon, Label } from 'semantic-ui-react';
+import {  Col, Card, Button } from 'react-bootstrap';
 
 const setText = (text) => (
-  text.length > 380 ? text.substr(0, 380) + '...' : text
+  text.length > 150 ? text.substr(0, 150) + '...' : text
 );
+
 const Post = (props) => {
   return (
-    <Item>
-      <Item.Image src={props.image} />
-      <Item.Content>
-        <Item.Header as='a'>{props.title}</Item.Header>
-        <Item.Description>{setText(props.text)}</Item.Description>
-        <Item.Extra>
-          <Label icon='eye' content={`Просмотров: ${props.views}`} />
-        </Item.Extra>
-      </Item.Content>
-    </Item>
+    <Col>
+      <Card border="secondary" style={{ flex: 1, width: '250px' }}>
+        <Card.Img
+          variant="top"
+          src={props.image}
+          height='150px'
+        />
+        <Card.Body>
+          <Card.Title>{props.title}</Card.Title>
+          <Card.Text>{setText(props.text)}</Card.Text>
+        </Card.Body>
+        <Card.Footer>
+          <Button variant="primary">Читать дальше</Button>
+        </Card.Footer>
+      </Card>
+    </Col>
   );
 };
 
