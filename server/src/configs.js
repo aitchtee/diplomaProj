@@ -4,7 +4,7 @@ const elems = {
     title: '.E1wd',
     image: '.EHr3',
     text: '.KFatj',
-    views: '.KJbx .KJep',
+    // views: '.KJbx .KJep',
     // title: '.heading_news-detail',
     // image: '.news-detail__photo img',
     // text: '.KFatj',
@@ -14,7 +14,7 @@ const elems = {
     title: '.h4-gorod',
     image: '.detail_picture img',
     text: '.detail_text',
-    views: '.count',
+    // views: '.count',
   },
   novorossiysk: {
     title: '.news-detail__header h1',
