@@ -8,7 +8,7 @@ var _fs = _interopRequireDefault(require("fs"));
 
 var _iconvLite = _interopRequireDefault(require("iconv-lite"));
 
-var _configs = require("./configs");
+var _configs = require("./config/configs");
 
 var saveResult = function saveResult(json) {
   json = _iconvLite.default.decode(new Buffer.from(json), 'utf8');
@@ -18,16 +18,24 @@ var saveResult = function saveResult(json) {
   });
 };
 
-var urlPage = 'https://sochi.com/news/'; // const urlPage = 'https://93.ru/text/';
+var urlPageKrd = 'https://kubnews.ru/'; //* krasnodar
 
-(0, _parsePost.parseLinks)(urlPage, '.block-news-content h3 a', 50) // parseLinks(urlPage, '.LBcb a')
+var urlPageSch = 'https://sochi.com/news/'; //* sochi
+// const urlPage = 'https://ofnvrsk.ru/'; //* novorossiysk
+// const urlPage = 'https://novorossportal.ru/category/news/'; //* novorossiysk
+// parseLinks(urlPageKrd, '.card') //* krasnodar
+//   // parseLinks(urlPage, '.td-main-content .td-image-wrap', 10) //* novorossiysk
+//   .then(links => {
+//     getPosts(links, elems.krasnodar)
+//       .then(posts => saveResult(JSON.stringify(posts, 0, 4)))
+//   })
+//   .catch(e => console.log(e));
+
+(0, _parsePost.parseLinks)(urlPageSch, '.block-news-content h3 a') //* sochi
 .then(function (links) {
   (0, _parsePost.getPosts)(links, _configs.elems.sochi).then(function (posts) {
     return saveResult(JSON.stringify(posts, 0, 4));
   });
 }).catch(function (e) {
   return console.log(e);
-}); // parsePost(
-//   'https://kubantoday.ru/navstrechu-75-letiyu-velikoy-pobedy/',
-//   elems.krasnodar
-// );
+});

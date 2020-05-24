@@ -17,6 +17,8 @@ var _unirest = _interopRequireDefault(require("unirest"));
 
 var _cheerio = _interopRequireDefault(require("cheerio"));
 
+var _axios = _interopRequireDefault(require("axios"));
+
 var log = function log(i, count, ms) {
   return new Promise(function (r) {
     return setTimeout(function () {
@@ -24,8 +26,9 @@ var log = function log(i, count, ms) {
       r();
     }, ms);
   });
-}; //* универсальный парсер
+};
 
+var dbUrl = 'http://localhost:8080/posts'; //* универсальный парсер
 
 function parsePost(url, elems) {
   // функция выполняется ассинхронно
@@ -41,6 +44,8 @@ function parsePost(url, elems) {
 
       var domain = url.match(/\/\/(.*?)\//)[1]; // получаем домен сайта 
 
+      var tag = $(elems.tag).text().trim(); // получаем категорию
+
       var title = $(elems.title).text().trim(); // получаем заголовок новости
 
       var image = $(elems.image).attr('src'); // получаем ссылку на картинку
@@ -48,15 +53,34 @@ function parsePost(url, elems) {
       image = image.indexOf('http') >= 0 ? image : "http://".concat(domain).concat(image);
       var text = $(elems.text).text().trim(); // получаем текст новости
 
-      var views = $(elems.views).text().trim(); // кол-во просмотров
+      var city = function city() {
+        switch (domain) {
+          case "kubnews.ru":
+            return 'krd';
 
+          case "sochi.com":
+            return 'sch';
+
+          default:
+            return "don't know";
+        }
+      };
+
+      console.log(city());
       var post = {
+        source: domain,
+        city: city(),
+        tag: tag,
         title: title,
         image: image,
-        text: text,
-        views: views
-      };
-      resolve(post); // console.log(post);
+        text: text
+      }; //* add post into db
+
+      _axios.default.post("".concat(dbUrl), post).then(function () {
+        console.log('post added');
+      });
+
+      resolve(post);
     });
   });
 }
@@ -65,8 +89,6 @@ function parsePost(url, elems) {
 
 function parseLinks(url, className) {
   var maxLinks = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;
-  // '.block-news-content h3 a' - sochi
-  // '.LBcb a'
   return new Promise(function (resolve, reject) {
     var links = [];
 
@@ -83,7 +105,7 @@ function parseLinks(url, className) {
 
       $(className).each(function (i, e) {
         if (i + 1 <= maxLinks) //! чтобы получить все ссылки убрать эту строчку
-          links.push('https://' + domain + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
+          links.push((domain.indexOf('http') ? 'http://' + domain : '') + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
       });
       resolve(links);
       if (!links.length) reject({
@@ -108,8 +130,7 @@ function _getPosts() {
           case 0:
             // 
             posts = [];
-            count = links.length; // console.log(links);
-
+            count = links.length;
             i = 0;
 
           case 3:
@@ -127,7 +148,7 @@ function _getPosts() {
             post = _context.sent;
             posts.push(post);
             _context.next = 10;
-            return log(i + 1, count, 2000);
+            return log(i + 1, count, 100);
 
           case 10:
             i++;

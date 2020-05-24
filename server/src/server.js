@@ -19,10 +19,10 @@ mongoose.connect(
   db.url,
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   },
-  () => console.log("MongoDB is connected")
-);
+  () => console.log("MongoDB is connected"));
 
 //* Enable CORS
 app.use((req, res, next) => {
@@ -37,28 +37,38 @@ app.use((req, res, next) => {
 //* Get all of our posts
 app.get("/posts", (req, res) => {
   Post.find({}).then(posts => {
-    res.send(posts);
+    res.json(posts);
   });
 });
 
 //* Get One of Our posts
-app.get("/posts/:id", (req, res) => {
+app.get("/posts/:city/:id", (req, res) => {
   const id = req.params.id;
-  Post.findOne({ _id: new ObjectID(id)}).then(post => {
+  const city = req.params.city
+  Post.findOne({ _id: new ObjectID(id), city: city }).then(post => {
     res.json(post);
   });
 });
 
-//* Create and Update post
+//* Get all posts from one city
+app.get("/posts/:city", (req, res) => {
+  const city = req.params.city;
+  Post.find({ city: city }).then(posts => {
+    res.json(posts)
+  })
+})
+
+//* Create or Update post
 app.post("/posts", (req, res) => {
   const data = {
     source: req.body.source,
+    city: req.body.city,
     tag: req.body.tag,
     title: req.body.title,
     image: req.body.image,
     text: req.body.text
   };
-  Post.findOne({ _id: req.body.id }, (err, post) => {
+  Post.findOne({ text: req.body.text }, (err, post) => {
     if (post) {
       Post.findByIdAndUpdate(req.body.id, data, { upsert: false }).then(
         updated => {

@@ -1,6 +1,6 @@
 import unirest from 'unirest';
 import cheerio from 'cheerio';
-
+import axios from 'axios';
 
 const log = (i, count, ms) => {
   return new Promise(r => setTimeout(() => {
@@ -12,38 +12,48 @@ const log = (i, count, ms) => {
   }, ms));
 };
 
+const dbUrl = 'http://localhost:8080/posts';
+
 //* универсальный парсер
 function parsePost(url, elems) { // функция выполняется ассинхронно
   return new Promise((resolve, reject) => {
-    unirest.get(url).end(({ body, error }) => { // но ожидает выполнение этой команды //*вытаскиваем сразу свойство body из response 
-
+    unirest.get(url).end(({ body, error }) => { // но ожидает завершения выполнения этой команды //* получаем сразу свойство body из response 
       if (error) reject(error);
-
       const $ = cheerio.load(body); // парсим содержимое нашего сайта
-
       const domain = url.match(/\/\/(.*?)\//)[1]; // получаем домен сайта 
+      const tag = $(elems.tag).text().trim(); // получаем категорию
       const title = $(elems.title).text().trim(); // получаем заголовок новости
       let image = $(elems.image).attr('src'); // получаем ссылку на картинку
       image = image.indexOf('http') >= 0 ? image : `http://${domain}${image}`;
       const text = $(elems.text).text().trim(); // получаем текст новости
-      const views = $(elems.views).text().trim(); // кол-во просмотров
-
+      const city = () => {
+        switch (domain) {
+          case "kubnews.ru":
+            return 'krd';
+          case "sochi.com":
+            return 'sch';
+          default:
+            return "another"
+        }
+      }
       const post = {
+        source: domain,
+        city: city(),
+        tag: tag,
         title: title,
         image: image,
         text: text,
-        views: views,
       };
+      axios.post(`${dbUrl}`, post).then(() => { //* add post into db
+        console.log('post added');
+      })
       resolve(post);
-      // console.log(post);
     });
   });
 };
 
 //* получаем все ссылки на новости
 function parseLinks(url, className, maxLinks = 5) {
-  // '.block-news-content h3 a' - sochi
-  // '.LBcb a'
   return new Promise((resolve, reject) => {
     let links = [];
 
@@ -54,8 +64,8 @@ function parseLinks(url, className, maxLinks = 5) {
       const domain = url.match(/\/\/(.*?)\//)[1]; // получаем домен сайта 
 
       $(className).each((i, e) => {
-        if (i + 1 <= maxLinks) //! чтобы получить все ссылки убрать эту строчку
-          links.push('https://' + domain + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
+        if (i + 1 <= maxLinks) 
+          links.push((domain.indexOf('http') ? ('http://' + domain) : '') + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
       });
 
       resolve(links)
@@ -64,17 +74,17 @@ function parseLinks(url, className, maxLinks = 5) {
   });
 };
 
+//* получаем данные из новостей
 async function getPosts(links, elems) { // 
   let posts = [];
   let count = links.length;
-  // console.log(links);
   for (let i = 0; i < count; i++) {
-    const post = await parsePost(
+    const post = await parsePost( // ожидаем выполнение этой функции
       links[i],
       elems,
     ).then(post => post);
     posts.push(post);
-    await log(i + 1, count, 2000);
+    await log(i + 1, count, 100);
   };
 
   return new Promise((resolve, reject) => {
@@ -86,5 +96,5 @@ async function getPosts(links, elems) { //
 export {
   parsePost,
   parseLinks,
-  getPosts
+  getPosts,
 }; // чтобы была возможность импортировать функцию в другие файлы
