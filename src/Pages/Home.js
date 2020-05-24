@@ -8,16 +8,17 @@ import Spinner from '../components/Spinner';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const url = 'http://192.168.1.70:8080/posts';
+
 class Home extends Component {
 
   fetchPosts() {
     const { setPosts } = this.props;
     setPosts([]);
     axios
-      .get('http://localhost:8080/posts')
+      .get(`${url}`)
       .then(({ data }) => {
         setPosts(data);
-        console.log('DATA', data)
       });
   };
 
@@ -31,18 +32,18 @@ class Home extends Component {
     return (
       <>
         <h2 className="text-center">Все новости</h2>
-        <Container style={{ display: 'flex', flex: 1 }}>
+        <Container>
           <Row>
             {
-              !items.length ? (
-                <Spinner />
+              items.length ? ( 
+                items.map((item, key) => (
+                  <Post
+                    key={key}
+                    {...item} // все свойства из item будут присвоены компоненту
+                  />
+                ))
               ) : (
-                  items.map((item, key) => (
-                    <Post
-                      key={key}
-                      {...item} // все свойства из item будут присвоены компоненту
-                    />
-                  ))
+                  <Spinner />
                 )
             }
           </Row>
