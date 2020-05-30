@@ -24,7 +24,8 @@ class PostDetails extends Component {
   componentDidMount() {
     let id = this.props.match.params.post_id;
     let city = this.props.match.params.city;
-    axios.get(`${url}/${city}/${id}`)
+    let tag = this.props.match.params.tag;
+    axios.get(`${url}/${city}/${tag}/${id}`)
       .then(res => {
         this.setState({
           post: res.data

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { connect } from 'react-redux'; // используется, когда нужно при экспорте требуется подключить что-то
 import { Container, Row } from 'react-bootstrap';
 
 import Post from '../components/Post';
@@ -11,35 +10,42 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const url = 'http://192.168.1.70:8080/posts';
 
 class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      posts: []
+    };
+  }
 
-  fetchPosts() {
-    const { setPosts } = this.props;
-    setPosts([]);
-    axios
-      .get(`${url}`)
+  fetchPosts() { // получение данных из таблицы
+    axios.get(`${url}`)
       .then(({ data }) => {
-        setPosts(data);
-      });
-  };
+        this.setState({
+          posts: data
+        })
+      })
+      .catch(e => console.log(e));
+  }
 
   componentDidMount() { // когда компонент будет монтироваться
     this.fetchPosts();
+    setInterval(() => this.fetchPosts(), 3600000)
   };
 
   render() {
-    const { posts } = this.props;
-    let { items } = posts;
+    const posts = this.state.posts
+    const rPosts = posts.reverse()
     return (
       <>
         <h2 className="text-center">Все новости</h2>
         <Container>
           <Row>
             {
-              items.length ? ( 
-                items.map((item, key) => (
+              rPosts.length ? (
+                rPosts.map((item, key) => (
                   <Post
                     key={key}
-                    {...item} // все свойства из item будут присвоены компоненту
+                    {...item} // все свойства из item будут переданы компоненту
                   />
                 ))
               ) : (
@@ -53,19 +59,4 @@ class Home extends Component {
   }
 }
 
-const state = props => {
-  return props;
-};
-
-const actions = (dispatch) => ({
-  setPosts: (data) => dispatch({
-    type: 'SET_POSTS',
-    payload: data,
-  }),
-  changeRegion: (name) => dispatch({
-    type: 'CHANGE_REGION',
-    payload: name,
-  }),
-});
-
-export default connect(state, actions)(Home);
+export default Home;
