@@ -7,20 +7,16 @@ const elems = {
     text: '.material__content_detail_text',
   },
   sochi: {
-    tag:'ul li',
+    tag:'.nav-pills li:nth-child(5)',
     title: '.h4-gorod',
     image: '.detail_picture img',
     text: '.detail_text',
   },
   novorossiysk: {
-    // tag: '.news-detail__category',
-    // title: '.news-detail__header h1',
-    // image: '.news-detail-content img',
-    // text: '.decor p',
-    tag: '.td-category',
-    title: '.entry-title',
-    image: '.td-post-content img',
-    text: '.td-post-content',
+    tag: '.post-categories',
+    title: '.post-header h1',
+    image: '.featured-caption img',
+    text: '.post-content p',
   },
 };
 

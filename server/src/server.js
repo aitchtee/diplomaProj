@@ -42,7 +42,7 @@ app.get("/posts", (req, res) => {
 });
 
 //* Get One of Our posts
-app.get("/posts/:city/:id", (req, res) => {
+app.get("/posts/:city/:tag/:id", (req, res) => {
   const id = req.params.id;
   const city = req.params.city
   Post.findOne({ _id: new ObjectID(id), city: city }).then(post => {
@@ -54,6 +54,15 @@ app.get("/posts/:city/:id", (req, res) => {
 app.get("/posts/:city", (req, res) => {
   const city = req.params.city;
   Post.find({ city: city }).then(posts => {
+    res.json(posts)
+  })
+})
+
+//* Get all posts of one city's tag
+app.get("/posts/:city/:tag", (req, res) => {
+  const city = req.params.city;
+  const tag = req.params.tag;
+  Post.find({ city: city, tag: tag }).then(posts => {
     res.json(posts)
   })
 })

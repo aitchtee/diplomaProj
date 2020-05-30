@@ -1,4 +1,4 @@
-import { parseLinks, getPosts } from './parsePost';
+import { parsePost, parseLinks, getPosts } from './parsePost';
 import fs from 'fs';
 import iconv from 'iconv-lite';
 
@@ -11,11 +11,10 @@ const saveResult = json => {
   });
 };
 
+const urlPageKrd = 'https://kubnews.ru/all/?type=news'; //* krasnodar
 const urlPageSch = 'https://sochi.com/news/'; //* sochi
-// const urlPage = 'https://ofnvrsk.ru/'; //* novorossiysk
-const urlPageNvr = 'https://novorossportal.ru/category/news/'; //* novorossiysk
+const urlPageNvr = 'https://novorab.ru/news/'; //* novorossiysk
 
-const urlPageKrd = 'https://kubnews.ru/'; //* krasnodar
 parseLinks(urlPageKrd, '.card') //* krasnodar
   .then(links => {
     getPosts(links, elems.krasnodar)
@@ -30,9 +29,18 @@ parseLinks(urlPageSch, '.block-news-content h3 a') //* sochi
   })
   .catch(e => console.log(e));
 
-parseLinks(urlPageNvr, '.td-main-content .td-image-wrap', 10) //* novorossiysk
+parseLinks(urlPageNvr, '.post-info a') //* novorossiysk
   .then(links => {
     getPosts(links, elems.novorossiysk)
       .then(posts => saveResult(JSON.stringify(posts, 0, 4)))
   })
   .catch(e => console.log(e));
+
+// setInterval(() => {
+//   parseLinks(urlPageKrd, '.card') // krasnodar
+//     .then(links => {
+//       getPosts(links, elems.krasnodar)
+//         .then(posts => saveResult(JSON.stringify(posts, 0, 4)))
+//     })
+//     .catch(e => console.log(e));
+// }, 3600000)
