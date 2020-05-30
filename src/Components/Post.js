@@ -17,7 +17,7 @@ const Post = (props) => {
         />
         <Card.Body>
           <Card.Title>
-            <Link to={'/' + props.city + '/' + props._id}>{props.title}</Link>
+            <Link to={'/' + props.city + '/' + props.tag + '/' + props._id}>{props.title}</Link>
           </Card.Title>
           <Card.Text>{setText(props.text)}</Card.Text>
         </Card.Body>
