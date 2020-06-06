@@ -20,7 +20,14 @@ const elems = {
   },
 };
 
+const urls = {
+  krd:'https://kubnews.ru/all/?type=news',
+  sch:'https://sochi.com/news/',
+  nvr:'https://novorab.ru/news/',
+}
+
 // делаем возможным передать объект в другие файлы
 module.exports = {
   elems: elems, // передаем объект elems с конфигурациями для поиска
+  urls: urls,
 };

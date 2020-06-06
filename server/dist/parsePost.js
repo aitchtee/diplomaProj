@@ -36,7 +36,7 @@ function parsePost(url, elems) {
     _unirest.default.get(url).end(function (_ref) {
       var body = _ref.body,
           error = _ref.error;
-      // но ожидает выполнение этой команды //*вытаскиваем сразу свойство body из response 
+      // но ожидает завершения выполнения этой команды //* получаем сразу свойство body из response 
       if (error) reject(error);
 
       var $ = _cheerio.default.load(body); // парсим содержимое нашего сайта
@@ -61,12 +61,33 @@ function parsePost(url, elems) {
           case "sochi.com":
             return 'sch';
 
+          case "novorab.ru":
+            return 'nvr';
+
           default:
-            return "don't know";
+            return "another";
         }
       };
 
-      console.log(city());
+      if (city() === "sch") {
+        switch (tag) {
+          case "Общество: люди, государство, жизнь":
+            tag = "Общество";
+            break;
+
+          case "Новости медицины":
+            tag = "Здравоохранение";
+            break;
+
+          case "Новости происшествия":
+            tag = "Происшествия";
+            break;
+
+          default:
+            return tag;
+        }
+      }
+
       var post = {
         source: domain,
         city: city(),
@@ -74,10 +95,13 @@ function parsePost(url, elems) {
         title: title,
         image: image,
         text: text
-      }; //* add post into db
+      };
 
       _axios.default.post("".concat(dbUrl), post).then(function () {
-        console.log('post added');
+        //* add post into db
+        console.log('post saved');
+      }).catch(function (e) {
+        return console.log(e);
       });
 
       resolve(post);
@@ -104,8 +128,7 @@ function parseLinks(url, className) {
       var domain = url.match(/\/\/(.*?)\//)[1]; // получаем домен сайта 
 
       $(className).each(function (i, e) {
-        if (i + 1 <= maxLinks) //! чтобы получить все ссылки убрать эту строчку
-          links.push((domain.indexOf('http') ? 'http://' + domain : '') + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
+        if (i < maxLinks) links.push(($(e).attr('href').indexOf('http') ? 'http://' + domain : '') + $(e).attr('href')); // чтобы не получать больше чем maxLinks ссылок
       });
       resolve(links);
       if (!links.length) reject({
@@ -115,7 +138,7 @@ function parseLinks(url, className) {
   });
 }
 
-;
+; //* получаем данные из новостей
 
 function getPosts(_x, _x2) {
   return _getPosts.apply(this, arguments);
@@ -140,8 +163,11 @@ function _getPosts() {
             }
 
             _context.next = 6;
-            return parsePost(links[i], elems).then(function (post) {
+            return parsePost( // ожидаем выполнение этой функции
+            links[i], elems).then(function (post) {
               return post;
+            }).catch(function (e) {
+              return console.log(e);
             });
 
           case 6:
