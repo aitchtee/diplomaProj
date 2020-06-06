@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Container, Row } from 'react-bootstrap';
 
 import Post from '../components/Post';
 import Spinner from '../components/Spinner';
+import Pagination from '../components/Pagination';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -13,36 +13,43 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: []
-    };
+      pager: {},
+      pageOfItems: []
+    }
   }
 
-  fetchPosts() { // получение данных из таблицы
-    axios.get(`${url}`)
-      .then(({ data }) => {
-        this.setState({
-          posts: data
+  loadPage() {
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page')) || 1;
+
+    if (page !== this.state.pager.currentPage) {
+      fetch(`${url}?page=${page}`, { methos: 'GET' })
+        .then(response => response.json())
+        .then(({ pager, pageOfItems }) => {
+          this.setState({ pager, pageOfItems });
         })
-      })
-      .catch(e => console.log(e));
+    }
   }
 
   componentDidMount() { // когда компонент будет монтироваться
-    this.fetchPosts();
-    setInterval(() => this.fetchPosts(), 3600000)
+    this.loadPage();
+    setInterval(() => this.loadPage(), 3600000);
   };
 
+  componentDidUpdate() {
+    this.loadPage();
+  }
+
   render() {
-    const posts = this.state.posts
-    const rPosts = posts.reverse()
+    const { pager, pageOfItems } = this.state;
     return (
       <>
-        <h2 className="text-center">Все новости</h2>
         <Container>
+          <h2 className="text-center">Все новости</h2>
           <Row>
             {
-              rPosts.length ? (
-                rPosts.map((item, key) => (
+              pageOfItems.length ? (
+                pageOfItems.map((item, key) => (
                   <Post
                     key={key}
                     {...item} // все свойства из item будут переданы компоненту
@@ -53,6 +60,7 @@ class Home extends Component {
                 )
             }
           </Row>
+          <Pagination {...pager} />
         </Container>
       </>
     )

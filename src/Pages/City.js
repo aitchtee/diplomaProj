@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Container, Row } from 'react-bootstrap';
 
 import Post from '../components/Post';
 import Spinner from '../components/Spinner';
+import Pagination from '../components/Pagination';
 
 const url = 'http://192.168.1.70:8080/posts';
 
@@ -11,7 +11,8 @@ class City extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
+      pager: {},
+      pageOfItems: [],
       city: undefined
     };
   }
@@ -20,49 +21,54 @@ class City extends Component {
     const city = this.props.match.params.city
     switch (city) {
       case "krd":
-        this.setState({ city: "Краснодар" })
+        this.setState({ city: "Краснодар" });
         break;
       case "sch":
-        this.setState({ city: "Сочи" })
+        this.setState({ city: "Сочи" });
         break;
       case "nvr":
-        this.setState({ city: "Новороссийск" })
+        this.setState({ city: "Новороссийск" });
         break;
       default:
-        this.setState({ city: undefined })
+        this.setState({ city: undefined });
     }
   }
 
-  fetchPosts() {
-    const city = this.props.match.params.city
-    axios.get(`${url}/${city}`)
-      .then(({ data }) => {
-        this.setState({
-          posts: data
+  loadPage() {
+    const city = this.props.match.params.city;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page')) || 1;
+
+    if (page !== this.state.pager.currentPage) {
+      fetch(`${url}/${city}?page=${page}`, { methos: 'GET' })
+        .then(response => response.json())
+        .then(({ pager, pageOfItems }) => {
+          this.setState({ pager, pageOfItems });
         })
-        console.log(data)
-      })
-      .catch(e => console.log(e));
+    }
   }
 
   componentDidMount() { // когда компонент будет монтироваться
     this.setCity();
-    this.fetchPosts();
-    setInterval(() => this.fetchPosts(), 3600000)
+    this.loadPage();
+    setInterval(() => this.loadPage(), 3600000);
   };
 
+  componentDidUpdate() {
+    this.loadPage();
+  }
+
   render() {
-    const posts = this.state.posts
-    const rPosts = posts.reverse()
-    const city = this.state.city
+    const city = this.state.city;
+    const { pager, pageOfItems } = this.state;
     return (
       <>
-        <h2 className="text-center">{city}</h2>
         <Container>
+        <h2 className="text-center">{city}</h2>
           <Row>
             {
-              rPosts.length ? (
-                rPosts.map((post, key) => (
+              pageOfItems.length ? (
+                pageOfItems.map((post, key) => (
                   <Post
                     key={key}
                     {...post}
@@ -73,6 +79,7 @@ class City extends Component {
                 )
             }
           </Row>
+          <Pagination {...pager} />
         </Container>
       </>
     )

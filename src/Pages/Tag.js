@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Container, Row } from 'react-bootstrap';
 
 import Post from '../components/Post';
 import Spinner from '../components/Spinner';
+import Pagination from '../components/Pagination';
 
 const url = 'http://192.168.1.70:8080/posts';
 
@@ -11,7 +11,8 @@ class Tag extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
+      pager: {},
+      pageOfItems: [],
       city: undefined,
       tag: undefined
     };
@@ -80,37 +81,43 @@ class Tag extends Component {
     }
   }
 
-  fetchPosts() {
-    const city = this.props.match.params.city
-    const tag = this.props.match.params.tag
-    axios.get(`${url}/${city}/${tag}`)
-      .then(({ data }) => {
-        this.setState({
-          posts: data
+  loadPage() {
+    const city = this.props.match.params.city;
+    const tag = this.props.match.params.tag;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page')) || 1;
+
+    if (page !== this.state.pager.currentPage) {
+      fetch(`${url}/${city}/${tag}?page=${page}`, { methos: 'GET' })
+        .then(response => response.json())
+        .then(({ pager, pageOfItems }) => {
+          this.setState({ pager, pageOfItems });
         })
-        console.log(data)
-      })
-      .catch(e => console.log(e));
+    }
   }
 
   componentDidMount() { // когда компонент будет монтироваться
     this.setCity();
-    this.fetchPosts();
-    setInterval(() => this.fetchPosts(), 3600000)
+    this.loadPage();
+    setInterval(() => this.loadPage(), 3600000)
   };
+
+  componentDidUpdate() {
+    this.loadPage();
+  }
+
   render() {
-    const posts = this.state.posts;
     const city = this.state.city;
     const tag = this.state.tag;
-    const rPosts = posts.reverse()
+    const { pager, pageOfItems } = this.state;
     return (
       <>
-        <h2 className="text-center">{city} : {tag}</h2>
         <Container>
+          <h2 className="text-center">{city} : {tag}</h2>
           <Row>
             {
-              rPosts.length ? (
-                rPosts.map((post, key) => (
+              pageOfItems.length ? (
+                pageOfItems.map((post, key) => (
                   <Post
                     key={key}
                     {...post}
@@ -121,6 +128,7 @@ class Tag extends Component {
                 )
             }
           </Row>
+          <Pagination {...pager} />
         </Container>
       </>
     )
